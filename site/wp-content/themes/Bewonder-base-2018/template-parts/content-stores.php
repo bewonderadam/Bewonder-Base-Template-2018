@@ -1,4 +1,4 @@
-<?php if( is_archive() || ! is_single() ) : ?>
+<?php if( !is_single() ) : ?>
   <article <?php post_class(); ?>>
     <a href="<?php the_permalink(); ?>">
       <?php if( has_post_thumbnail() ) :

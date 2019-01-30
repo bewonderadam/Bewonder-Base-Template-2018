@@ -13,6 +13,7 @@
     <div class="event-content">
       <h2><?php the_title(); ?></h2>
       <?php the_content(); ?>
+      <?php the_field( 'eventbrite_embed_checkout' ); ?>
     </div>
   </article>
 <?php endif; ?>

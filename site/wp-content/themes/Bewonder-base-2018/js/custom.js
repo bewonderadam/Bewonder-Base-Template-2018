@@ -55,4 +55,17 @@ jQuery( document ).ready(function($) {
 
     }
   }
+  // Newsletter Form
+  if ($("<input />").prop("required") === undefined) {
+    $(document).on("submit", function(e) {
+      $(this)
+      .find("input, select, textarea")
+      .filter("[required]")
+      .filter(function() { return this.value == ''; })
+      .each(function() {
+        e.preventDefault();
+        alert( $(this).prev('label').html() + " is required!");
+      });
+    });
+  }
 });
