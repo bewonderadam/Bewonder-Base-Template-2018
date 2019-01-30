@@ -1,50 +1,12 @@
 jQuery(document).ready( function($) {
-	if( $('body').hasClass( 'post-type-archive' ) ) {
-		if( $('body').hasClass( 'post-type-archive-stores' ) ) {
-			var postType = 'stores';
-		}
-		if( $('body').hasClass( 'post-type-archive-offers' ) ) {
-			var postType = 'offers';
-		}
-		if( $('body').hasClass( 'post-type-archive-events' ) ) {
-			var postType = 'events';
-		}
-		if( $('body').hasClass( 'post-type-archive-news' ) ) {
-			var postType = 'news';
-		}
-		if( $('body').hasClass( 'post-type-archive-jobs' ) ) {
-			var postType = 'jobs';
-		}
-		console.log( postType );
+	if( $('body').hasClass( 'post-type-archive' ) || $('body').hasClass( 'tax-store_categories' ) ) {
 		// Stores Pagination
-		var ppp = 20; // Post per page
+		var ppp = -1; // Post per page
 		var pageNumber = 1;
-
-		function loadStores() {
-			pageNumber++;
-			// do the ajax request for loading more stores
-			$.ajax({
-	      type: 'post',
-				url: storesAjax.ajaxurl, // the localized name of your file
-				data: {
-	  	    action: 'more_stores', // the wp_ajax_ hook name
-					ppp: ppp,
-					pageNumber: pageNumber,
-					postType: postType
-			  },
-	      success: function( result ) {
-	  	    $('section#page-container .page-container-inner').append( result );
-		    }
-	    });
-		}
-		$(window).on('scroll', function () {
-	    if($(window).scrollTop() + $(window).height()  >= $(document).height() - 100) {
-				loadStores();
-	    }
-		});
+		var postType = 'stores';
 	}
 
-	if( $('body').hasClass( 'post-type-archive-stores' ) ) {
+	if( $('body').hasClass( 'post-type-archive-stores' ) || $('body').hasClass( 'tax-store_categories' ) ) {
 		// Stores search
 		function storesSearch(t) {
 	    // do the ajax request for stores search
@@ -101,4 +63,5 @@ jQuery(document).ready( function($) {
 		  filterStores( $(this).val() );
 		})
 	}
+
 })

@@ -52,7 +52,7 @@ function bewonder_base_2018_theme_styles_and_scripts() {
   wp_deregister_script('jquery');
 	wp_enqueue_script( 'jquery', 'https://code.jquery.com/jquery-3.3.1.min.js' );
   wp_enqueue_script( 'custom-js', get_template_directory_uri() . '/js/custom.js' );
-  if( is_front_page() ) {
+  if( is_front_page() || is_page( '260' ) ) {
     wp_enqueue_script( 'owl-carousel-min-js', 'https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js' );
     wp_enqueue_style( 'owl-carousel-min-css', 'https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/assets/owl.carousel.min.css' );
   }
@@ -68,12 +68,9 @@ add_action( 'wp_enqueue_scripts', 'bewonder_base_2018_theme_styles_and_scripts' 
 
 // Enable Options Page
 if( function_exists('acf_add_options_page') ) {
-  acf_add_options_page();
-}
-// Change Option's Page name
-if( function_exists('acf_set_options_page_title') )
-{
-  acf_set_options_page_title( __('Centre Info') );
+	acf_add_options_page();
+	acf_add_options_sub_page('General');
+	acf_add_options_sub_page('Opening Hours');
 }
 /**
  * Remove archive title prefixes.
@@ -121,7 +118,7 @@ function get_social_links() {
 }
 // Get the page title for each Archive from Centre Info > Archives
 function archive_page_title() {
-  $url = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+  $url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
   reset_rows();
   if( have_rows( 'archive_pages', 'option' ) ) :
     while( have_rows( 'archive_pages', 'option' ) ) : the_row();
@@ -135,7 +132,7 @@ function archive_page_title() {
 }
 // Get the header image for each Archive from Centre Info > Archives
 function archive_page_header_image() {
-  $url = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+  $url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
   reset_rows();
   if( have_rows( 'archive_pages', 'option' ) ) :
     while( have_rows( 'archive_pages', 'option' ) ) : the_row();
@@ -149,53 +146,57 @@ function archive_page_header_image() {
 }
 // RUBIX FORM (NEWSLETTER) - UPDATE TO CORRECT DETAILS!
 function rubiks_form() {
-	$acc_name = '';
-	$list_name = '';
+	$acc_name = 'TestArea';
+	$list_name = "Adam's Test Contact List";
+  $old_date = date('Y-m-d');
+  $new_date = date('Y-m-d', strtotime('+1095 days'));
 	echo '
-	<form action="https://response.pure360.com/interface/list.php" METHOD="post">
+	<form id="rubiksForm" action="https://response.pure360.com/interface/list.php" METHOD="post">
   	<input type="hidden" name="accName" VALUE="'.$acc_name.'"/>
   	<input type="hidden" name="listName" VALUE="'.$list_name.'"/>
   	<input type="hidden" name="fullEmailValidationInd" VALUE="Y"/>
   	<input type="hidden" name="doubleOptin" VALUE="false"/>
-  	<input type="hidden" name="successUrl" VALUE="NO-REDIRECT"/>
+  	<input type="hidden" name="successUrl" VALUE="'.get_bloginfo( "url" ).'/form-submission-success"/>
   	<input type="hidden" name="errorUrl" VALUE=""/>
-  	<input type="hidden" name="signUpSource" value="Website Newsletter Sign Up"/>
-
-    <div class="field"><label>Title: </label> <input placeholder="Title" name="title"/></div>
-  	<div class="field"><label>First Name: </label><input placeholder ="First Name" name="firstName"/></div>
-  	<div class="field"><label>Last Name: </label> <input placeholder="Last Name" name="lastName"/></div>
-  	<div class="field"><label>Email: </label><input placeholder="Email" name="email"/></div>
-  	<div class="field"><label>Mobile:</label> <input placeholder="Mobile" name="mobile"/></div>
-  	<div class="field"><label>Postcode: </label><input placeholder="Postcode" name="postcode"/></div>
-  	<div class="field"><label>Age: </label><input placeholder="Age" name="age"/></div>
-  	<div class="field"><label>Gender: </label> <input placeholder="Gender" name="gender"/></div>
+    <input type="hidden" name="sign_up_date" value="'.$old_date.'" />
+  	<input type="hidden" name="signUpSource" value="Newsletter"/>
+    <input type="hidden" name="sign_up_campaign" value="Opted In"/>
+    <input type="hidden" name="expiry_date" value="'.$new_date.'"/>
+    <div class="field">
+      <label>Title</label>
+      <select name="title">
+        <option name="title" value="Mr">Mr</option>
+        <option name="title" value="Mrs">Mrs</option>
+        <option name="title" value="Miss" />Miss</option>
+        <option name="title" value="Ms.">Ms.</option>
+        <option name="title" value="Other"/>Other</option>
+      </select>
+    </div>
+  	<div class="field">
+      <label>First Name:</label>
+      <input placeholder ="First Name" name="firstName"/>
+    </div>
+  	<div class="field">
+      <label>Last Name:</label>
+      <input placeholder="Last Name" name="lastName"/>
+    </div>
+  	<div class="field">
+      <label>Email: </label>
+      <input type="email" placeholder="Email" name="email" required />
+    </div>
   	<div class="field interests">
     	<label class="title">I AM INTERESTED IN...</label>
-    	<div class="field"><input type="checkbox" value="Fashion" name="interests[]"/><label>Fashion</label></div>
-    	<div class="field"><input type="checkbox" value="Kids" name="interests[]"/><label>Kids</label></div>
-      <div class="field"><input type="checkbox" value="Eating and Drinking" name="interests[]"/><label>Eating & Drinking</label></div>
-      <div class="field"><input type="checkbox" value="Special Offers" name="interests[]"/><label>Special Offers</label></div>
-    	<div class="field"><input type="checkbox" value="Events" name="interests[]"/><label>Events</label></div>
-      <div class="field"><input type="checkbox" value="Beauty" name="interests[]"/><label>Beauty</label></div>
-      <div class="field"><input type="checkbox" value="Homeware" name="interests[]"/><label>Homeware</label></div>
-      <div class="field"><input type="checkbox" value="Technology" name="interests[]"/><label>Technology</label></div>
-      <div class="field"><input type="checkbox" value="Food" name="interests[]"/><label>Food</label></div>
+    	<input type="checkbox" value="Offers" name="interests[]"/> Offers <br />
+    	<input type="checkbox" value="Events" name="interests[]"/> Events <br />
+      <input type="checkbox" value="Food and Drink" name="interests[]"/> Food & Drink <br />
+      <input type="checkbox" value="Fashion" name="interests[]"/> Fashion <br />
+    	<input type="checkbox" value="Kids" name="interests[]"/> Kids <br />
+      <input type="checkbox" value="Competitions" name="interests[]"/> Competitions <br />
   	</div>
-
-  	<div class="hidden-fields">
-  		<div class="field hidden-field"><label>mobileNo:</label> <input name="mobileNo"/></div>
-  		<div class="field"><label>Address Line 1: </label> <input name="address1"/></div>
-  		<div class="field"><label>Address Line 2: </label> <input name="address2"/></div>
-  		<div class="field"><label>Address Line 3: </label> <input name="address3"/></div>
-  		<div class="field"><label>Address Line 4: </label> <input name="address4"/></div>
-  		<div class="field"><label>Town: </label><input name="town"/></div>
-  		<div class="field"><label>Country: </label><input name="country"/></div>
-  		<div class="field hidden"><label>ageRange: </label><input name="ageRange"/></div>
-  		<div class="field hidden"><label>DOB: </label><input name="DOB"/></div>
-  		<div class="field hidden"><label>carReg: </label> <input name="carReg"/></div>
-  	</div>
-    <p>Your personal details are safe with us. For more info, read our privacy polic.</p>
-  	<input class="button" type="submit" VALUE="Sign up" />
+    <p>Just so you know, we take data protection seriously! We never share your data with third parties and we promise to only send you information on offers, competitions and news relating to [insert centre name].</p>
+		<script src="https://www.google.com/recaptcha/api.js"> </script>
+		<div class="g-recaptcha" data-sitekey="6Lda1BAUAAAAABeemGvQod8rVNQQUSM2y9pFK_gS"> </div>
+  	<input class="button" type="submit" value="Sign up" />
 	</form>
 	';
 }
@@ -235,7 +236,7 @@ function centre_opening_hours() {
 }
 add_shortcode( 'centre-opening-hours', 'centre_opening_hours' );
 
-// Load more stores AJAX function
+// Search Stores stores AJAX function
 function stores_search() {
 	/* get the search terms entered into the search box */
 	$search = sanitize_text_field( $_POST[ 'search' ] );
@@ -261,7 +262,7 @@ function stores_search() {
   /* no search results found */
 	} else {
   	/* add no results message to output */
-  	echo 'error';
+  	echo 'There are no stores matching your search.';
 	} // end if have posts
 	/* reset query */
 	wp_reset_query();
@@ -274,7 +275,7 @@ add_action( 'wp_ajax_nopriv_stores_search', 'stores_search' );
 function filter_stores() {
   $ppp = $_POST[ 'ppp' ];
   $taxonomy = sanitize_text_field( $_POST[ 'taxonomy' ] );
-  if( $taxonomy == 'all-shops' ) :
+  if( $taxonomy == '0' ) :
     $q = new WP_Query(
   		array(
       	'post_type' => 'stores',
@@ -315,7 +316,7 @@ function filter_stores() {
   /* no search results found */
 	} else {
   	/* add no results message to output */
-  	echo 'error';
+  	echo 'There are no stores in this category.';
 	} // end if have posts
 	/* reset query */
 	wp_reset_query();
@@ -324,41 +325,226 @@ function filter_stores() {
 }
 add_action( 'wp_ajax_filter_stores', 'filter_stores' );
 add_action( 'wp_ajax_nopriv_filter_stores', 'filter_stores' );
+if( function_exists('acf_add_local_field_group') ):
 
-// Load stores AJAX function
-function more_stores() {
-  $ppp = $_POST[ 'ppp' ];
-  $pageNumber = $_POST[ 'pageNumber' ];
-  $postType = $_POST[ 'postType' ];
-  /* run a new query including the search string */
-	$q = new WP_Query(
+acf_add_local_field_group(array(
+	'key' => 'group_5b100d8ea06fb',
+	'title' => 'Rubix Event Form',
+	'fields' => array(
 		array(
-			'post_type'  =>  $postType,
-      'post_status' => 'publish',
-			'orderby' => 'title',
-      'order' => 'ASC',
-      'posts_per_page' =>  $ppp,
-      'paged' => $pageNumber,
-		)
-	);
-	/* store all returned output in here */
-	$output = '';
-	/* check whether any search results are found */
-	if( $q->have_posts() ) {
-  	/* loop through each result */
-  	while( $q->have_posts() ) : $q->the_post();
-  		/* add result and link to post to output */
-      get_template_part( 'template-parts/content', $postType );
-  	/* end loop */
-  	endwhile;
-  /* no search results found */
-	} else {
-  	// do nothing
-
-	} // end if have posts
-	/* reset query */
-	wp_reset_query();
-	die();
-}
-add_action( 'wp_ajax_more_stores', 'more_stores' );
-add_action( 'wp_ajax_nopriv_more_stores', 'more_stores' );
+			'key' => 'field_5b100d970275e',
+			'label' => 'Account Name',
+			'name' => 'account_name',
+			'type' => 'text',
+			'instructions' => 'This must be identical to the Account Name in Rubix.',
+			'required' => 1,
+			'conditional_logic' => 0,
+			'wrapper' => array(
+				'width' => '50',
+				'class' => '',
+				'id' => '',
+			),
+			'default_value' => '',
+			'placeholder' => '',
+			'prepend' => '',
+			'append' => '',
+			'maxlength' => '',
+		),
+		array(
+			'key' => 'field_5b100d9e0275f',
+			'label' => 'List Name',
+			'name' => 'list_name',
+			'type' => 'text',
+			'instructions' => 'This must be identical to the List Name in Rubix.',
+			'required' => 1,
+			'conditional_logic' => 0,
+			'wrapper' => array(
+				'width' => '50',
+				'class' => '',
+				'id' => '',
+			),
+			'default_value' => '',
+			'placeholder' => '',
+			'prepend' => '',
+			'append' => '',
+			'maxlength' => '',
+		),
+		array(
+			'key' => 'field_5b100dd802760',
+			'label' => 'Opt In Text',
+			'name' => 'opt_in_text',
+			'type' => 'textarea',
+			'instructions' => '',
+			'required' => 1,
+			'conditional_logic' => 0,
+			'wrapper' => array(
+				'width' => '',
+				'class' => '',
+				'id' => '',
+			),
+			'default_value' => 'Please tick this box if you wish to receive information on offers, competitions and news relating to [INSERT CENTRE NAME]. We do not share your information with third parties.',
+			'placeholder' => '',
+			'maxlength' => '',
+			'rows' => '',
+			'new_lines' => '',
+		),
+		array(
+			'key' => 'field_5b111ad0c47c6',
+			'label' => 'Form Submission Success Page',
+			'name' => 'form_submission_success_page',
+			'type' => 'text',
+			'instructions' => '',
+			'required' => 1,
+			'conditional_logic' => 0,
+			'wrapper' => array(
+				'width' => '',
+				'class' => '',
+				'id' => '',
+			),
+			'default_value' => '',
+			'placeholder' => '',
+			'prepend' => '',
+			'append' => '',
+			'maxlength' => '',
+		),
+		array(
+			'key' => 'field_5b100f5f6c8ee',
+			'label' => 'Additional Fields',
+			'name' => 'additional_fields',
+			'type' => 'repeater',
+			'instructions' => '',
+			'required' => 0,
+			'conditional_logic' => 0,
+			'wrapper' => array(
+				'width' => '',
+				'class' => '',
+				'id' => '',
+			),
+			'collapsed' => '',
+			'min' => 0,
+			'max' => 4,
+			'layout' => 'block',
+			'button_label' => '',
+			'sub_fields' => array(
+				array(
+					'key' => 'field_5b100f8e6c8ef',
+					'label' => 'Type of Field',
+					'name' => 'type_of_field',
+					'type' => 'radio',
+					'instructions' => '',
+					'required' => 1,
+					'conditional_logic' => 0,
+					'wrapper' => array(
+						'width' => '50',
+						'class' => '',
+						'id' => '',
+					),
+					'choices' => array(
+						'Text' => 'Text',
+						'Textarea' => 'Textarea',
+						'Checkbox' => 'Checkbox',
+						'Radio Button' => 'Radio Button',
+					),
+					'allow_null' => 0,
+					'other_choice' => 0,
+					'save_other_choice' => 0,
+					'default_value' => '',
+					'layout' => 'vertical',
+					'return_format' => 'value',
+				),
+				array(
+					'key' => 'field_5b1010066c8f0',
+					'label' => 'Field Label',
+					'name' => 'field_label',
+					'type' => 'text',
+					'instructions' => '',
+					'required' => 1,
+					'conditional_logic' => 0,
+					'wrapper' => array(
+						'width' => '50',
+						'class' => '',
+						'id' => '',
+					),
+					'default_value' => '',
+					'placeholder' => '',
+					'prepend' => '',
+					'append' => '',
+					'maxlength' => '',
+				),
+				array(
+					'key' => 'field_5b10151b62fa2',
+					'label' => 'Options',
+					'name' => 'options',
+					'type' => 'repeater',
+					'instructions' => '',
+					'required' => 1,
+					'conditional_logic' => array(
+						array(
+							array(
+								'field' => 'field_5b100f8e6c8ef',
+								'operator' => '==',
+								'value' => 'Checkbox',
+							),
+						),
+						array(
+							array(
+								'field' => 'field_5b100f8e6c8ef',
+								'operator' => '==',
+								'value' => 'Radio Button',
+							),
+						),
+					),
+					'wrapper' => array(
+						'width' => '',
+						'class' => '',
+						'id' => '',
+					),
+					'collapsed' => '',
+					'min' => 0,
+					'max' => 0,
+					'layout' => 'table',
+					'button_label' => '',
+					'sub_fields' => array(
+						array(
+							'key' => 'field_5b10155d62fa5',
+							'label' => 'Option Label',
+							'name' => 'option_label',
+							'type' => 'text',
+							'instructions' => '',
+							'required' => 0,
+							'conditional_logic' => 0,
+							'wrapper' => array(
+								'width' => '',
+								'class' => '',
+								'id' => '',
+							),
+							'default_value' => '',
+							'placeholder' => '',
+							'prepend' => '',
+							'append' => '',
+							'maxlength' => '',
+						),
+					),
+				),
+			),
+		),
+	),
+	'location' => array(
+		array(
+			array(
+				'param' => 'page_template',
+				'operator' => '==',
+				'value' => 'page-rubix-event-form.php',
+			),
+		),
+	),
+	'menu_order' => 0,
+	'position' => 'acf_after_title',
+	'style' => 'default',
+	'label_placement' => 'top',
+	'instruction_placement' => 'label',
+	'hide_on_screen' => '',
+	'active' => 1,
+	'description' => '',
+));
+endif;

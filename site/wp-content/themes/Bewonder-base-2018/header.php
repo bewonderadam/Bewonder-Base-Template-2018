@@ -20,7 +20,7 @@
       </section>
       <section id="bottom-header-container">
         <div class="bottom-header-inner">
-          <a id="site-logo" href="<?php echo get_bloginfo( 'url' ); ?>"><?php echo get_bloginfo( 'name' ); ?></a>
+          <a id="site-logo" href="<?php echo get_bloginfo( 'url' ); ?>/"><?php echo get_bloginfo( 'name' ); ?></a>
           <nav id="site-navigation" class="main-navigation" role="navigation">
             <a class="menu-toggle">Primary Menu</a>
             <?php wp_nav_menu( array( 'theme_location' => 'menu-1', 'menu_id' => 'primary-menu' ) ); ?>
