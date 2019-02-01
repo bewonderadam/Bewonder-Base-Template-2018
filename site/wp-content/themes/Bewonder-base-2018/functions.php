@@ -85,7 +85,7 @@ function grd_custom_archive_title( $title ) {
 add_filter( 'get_the_archive_title', 'grd_custom_archive_title' );
 // Add Google API key to ACF
 function my_acf_init() {
-	acf_update_setting('google_api_key', 'AIzaSyCiMQNjO97IN-MYzAyN41XLKg9A8H9MZfA');
+	acf_update_setting('google_api_key', 'AIzaSyAObXNwRkMS_Vdb7e0YyIhqKJsGorN5apU');
 }
 add_action('acf/init', 'my_acf_init');
 // Today's Centre opening times
@@ -202,7 +202,7 @@ function rubiks_form() {
 }
 // Create shortcode for ACF map
 function the_map() {
-  $html = '<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCiMQNjO97IN-MYzAyN41XLKg9A8H9MZfA"></script>';
+  $html = '<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAObXNwRkMS_Vdb7e0YyIhqKJsGorN5apU"></script>';
 	$location = get_field( 'centre_location', 'option' );
 	if( !empty($location) ):
 		$html .= '<section class="acf-map">
